@@ -29,9 +29,15 @@ public class CheckoutTest extends BaseTest {
         ProductsPage productsPage = new ProductsPage(driver);
 
         List<String> expectedItems = List.of(
-            "Sauce Labs Backpack",
-            "Sauce Labs Bike Light"
-        );
+                "Sauce Labs Backpack",
+                "Sauce Labs Bike Light");
+
+        // Record the advertised prices before checkout
+        BigDecimal backpackPrice = parseAmount(
+                productsPage.getProductPrice("Sauce Labs Backpack"));
+
+        BigDecimal bikeLightPrice = parseAmount(
+                productsPage.getProductPrice("Sauce Labs Bike Light"));
 
         productsPage.addProductToCart("Sauce Labs Backpack");
         productsPage.addProductToCart("Sauce Labs Bike Light");
@@ -42,123 +48,102 @@ public class CheckoutTest extends BaseTest {
         List<String> cartItems = cartPage.getCartItemNames();
 
         Assert.assertEquals(
-            cartItems.size(), 2,
-            "Expected two products in the cart"
-        );
+                cartItems.size(), 2,
+                "Expected two products in the cart");
 
         Assert.assertTrue(
-            cartItems.containsAll(expectedItems),
-            "Cart does not contain the expected products"
-        );
+                cartItems.containsAll(expectedItems),
+                "Cart does not contain the expected products");
 
         // WHEN: I proceed to checkout and enter customer details
         cartPage.proceedToCheckout();
 
-        CheckoutInformationPage informationPage =
-            new CheckoutInformationPage(driver);
+        CheckoutInformationPage informationPage = new CheckoutInformationPage(driver);
 
         informationPage.enterCustomerDetails(
-            "Zaz", "Excellenttester", "MK45 4HR"
-        );
+                "Zaz", "Excellenttester", "MK45 4HR");
 
         informationPage.continueToOverview();
 
         // THEN: The order overview should be correct
-        CheckoutOverviewPage overviewPage =
-            new CheckoutOverviewPage(driver);
+        CheckoutOverviewPage overviewPage = new CheckoutOverviewPage(driver);
 
         List<String> overviewItems = overviewPage.getItemNames();
 
         Assert.assertEquals(
-            overviewItems.size(), 2,
-            "Expected two products in the order overview"
-        );
+                overviewItems.size(), 2,
+                "Expected two products in the order overview");
 
         Assert.assertTrue(
-            overviewItems.containsAll(expectedItems),
-            "Order overview contains incorrect products"
-        );
+                overviewItems.containsAll(expectedItems),
+                "Order overview contains incorrect products");
 
-        // Calculate the expected subtotal from known product prices
-        BigDecimal expectedSubtotal = new BigDecimal("29.99")
-            .add(new BigDecimal("9.99"));
+        // Calculate the expected subtotal from the advertised prices
+        BigDecimal expectedSubtotal = backpackPrice.add(bikeLightPrice);
 
         BigDecimal actualSubtotal = parseAmount(
-            overviewPage.getSubtotal()
-        );
+                overviewPage.getSubtotal());
 
         Assert.assertEquals(
-            actualSubtotal, expectedSubtotal,
-            "Order subtotal is incorrect"
-        );
+                actualSubtotal, expectedSubtotal,
+                "Order subtotal is incorrect");
 
         // SauceDemo uses an 8% tax rate
         BigDecimal expectedTax = expectedSubtotal
-            .multiply(new BigDecimal("0.08"))
-            .setScale(2, RoundingMode.HALF_UP);
+                .multiply(new BigDecimal("0.08"))
+                .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal actualTax = parseAmount(
-            overviewPage.getTax()
-        );
+                overviewPage.getTax());
 
         Assert.assertEquals(
-            actualTax, expectedTax,
-            "Order tax is incorrect"
-        );
+                actualTax, expectedTax,
+                "Order tax is incorrect");
 
         // Verify the total equals the subtotal plus tax
         BigDecimal actualTotal = parseAmount(
-            overviewPage.getTotal()
-        );
+                overviewPage.getTotal());
 
         Assert.assertEquals(
-            actualTotal,
-            expectedSubtotal.add(expectedTax),
-            "Order total is incorrect"
-        );
+                actualTotal,
+                expectedSubtotal.add(expectedTax),
+                "Order total is incorrect");
 
         // Verify payment and shipping information
         Assert.assertEquals(
-            overviewPage.getPaymentInformation(),
-            "SauceCard #31337",
-            "Payment information is incorrect"
-        );
+                overviewPage.getPaymentInformation(),
+                "SauceCard #31337",
+                "Payment information is incorrect");
 
         Assert.assertEquals(
-            overviewPage.getShippingInformation(),
-            "Free Pony Express Delivery!",
-            "Shipping information is incorrect"
-        );
+                overviewPage.getShippingInformation(),
+                "Free Pony Express Delivery!",
+                "Shipping information is incorrect");
 
         // WHEN: I complete the order
         overviewPage.finishOrder();
 
         // THEN: The order confirmation should appear
-        CheckoutCompletePage completePage =
-            new CheckoutCompletePage(driver);
+        CheckoutCompletePage completePage = new CheckoutCompletePage(driver);
 
         Assert.assertEquals(
-            completePage.getPageHeading(),
-            "Checkout: Complete!",
-            "Checkout completion page did not load"
-        );
+                completePage.getPageHeading(),
+                "Checkout: Complete!",
+                "Checkout completion page did not load");
 
         Assert.assertEquals(
-            completePage.getConfirmationHeading(),
-            "Thank you for your order!",
-            "Order confirmation heading is incorrect"
-        );
+                completePage.getConfirmationHeading(),
+                "Thank you for your order!",
+                "Order confirmation heading is incorrect");
 
         Assert.assertTrue(
-            completePage.getConfirmationMessage().contains("dispatched"),
-            "Expected a message confirming order dispatch"
-        );
+                completePage.getConfirmationMessage().contains("dispatched"),
+                "Expected a message confirming order dispatch");
     }
 
     // Convert a displayed currency value into a BigDecimal
     private BigDecimal parseAmount(String text) {
         return new BigDecimal(
-            text.replaceAll("[^0-9.]", "")
-        );
+                text.replaceAll("[^0-9.]", ""));
     }
 }

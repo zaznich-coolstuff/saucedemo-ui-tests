@@ -101,4 +101,25 @@ public class ProductsPage {
                 ExpectedConditions.elementToBeClickable(cartLink)).click();
     }
 
+    // Read the price of a specific product by name
+    public String getProductPrice(String productName) {
+
+        List<WebElement> products = wait.until(
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(inventoryItems));
+
+        for (WebElement product : products) {
+
+            String name = product.findElement(
+                    By.className("inventory_item_name")).getText();
+
+            if (name.equals(productName)) {
+                return product.findElement(
+                        By.className("inventory_item_price")).getText();
+            }
+        }
+
+        throw new NoSuchElementException(
+                "Product not found: " + productName);
+    }
+
 }
