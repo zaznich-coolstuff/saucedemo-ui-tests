@@ -23,27 +23,31 @@ public class CheckoutOverviewPage {
     private By tax = By.className("summary_tax_label");
     private By total = By.className("summary_total_label");
 
-    private By summaryValues = By.className("summary_value_label");
+    private By paymentInformation = By.xpath(
+            "//div[@class='summary_info_label' and normalize-space()='Payment Information:']" +
+                    "/following-sibling::div[@class='summary_value_label'][1]");
+
+    private By shippingInformation = By.xpath(
+            "//div[@class='summary_info_label' and normalize-space()='Shipping Information:']" +
+                    "/following-sibling::div[@class='summary_value_label'][1]");
+
     private By finishButton = By.id("finish");
 
     public CheckoutOverviewPage(WebDriver driver) {
         this.wait = new WebDriverWait(
-            driver, Duration.ofSeconds(10)
-        );
+                driver, Duration.ofSeconds(10));
     }
 
     // Read the product names in the order
     public List<String> getItemNames() {
         List<WebElement> items = wait.until(
-            ExpectedConditions.visibilityOfAllElementsLocatedBy(cartItems)
-        );
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(cartItems));
 
         List<String> names = new ArrayList<>();
 
         for (WebElement item : items) {
             names.add(
-                item.findElement(productName).getText()
-            );
+                    item.findElement(productName).getText());
         }
 
         return names;
@@ -52,39 +56,33 @@ public class CheckoutOverviewPage {
     // Read the order's financial summary
     public String getSubtotal() {
         return wait.until(
-            ExpectedConditions.visibilityOfElementLocated(subtotal)
-        ).getText();
+                ExpectedConditions.visibilityOfElementLocated(subtotal)).getText();
     }
 
     public String getTax() {
         return wait.until(
-            ExpectedConditions.visibilityOfElementLocated(tax)
-        ).getText();
+                ExpectedConditions.visibilityOfElementLocated(tax)).getText();
     }
 
     public String getTotal() {
         return wait.until(
-            ExpectedConditions.visibilityOfElementLocated(total)
-        ).getText();
+                ExpectedConditions.visibilityOfElementLocated(total)).getText();
     }
 
     // Read the payment and shipping information
     public String getPaymentInformation() {
         return wait.until(
-            ExpectedConditions.visibilityOfAllElementsLocatedBy(summaryValues)
-        ).get(0).getText();
+                ExpectedConditions.visibilityOfElementLocated(paymentInformation)).getText();
     }
 
     public String getShippingInformation() {
         return wait.until(
-            ExpectedConditions.visibilityOfAllElementsLocatedBy(summaryValues)
-        ).get(1).getText();
+                ExpectedConditions.visibilityOfElementLocated(shippingInformation)).getText();
     }
 
     // Complete the purchase
     public void finishOrder() {
         wait.until(
-            ExpectedConditions.elementToBeClickable(finishButton)
-        ).click();
+                ExpectedConditions.elementToBeClickable(finishButton)).click();
     }
 }
