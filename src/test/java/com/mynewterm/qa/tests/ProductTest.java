@@ -34,32 +34,28 @@ public class ProductTest extends BaseTest {
 
         // THEN: The details should match the listing
         Assert.assertEquals(
-            detailsPage.getName(),
-            expectedName,
-            "Product name does not match the listing"
-        );
+                detailsPage.getName(),
+                expectedName,
+                "Product name does not match the listing");
 
         Assert.assertEquals(
-            detailsPage.getDescription(),
-            expectedDescription,
-            "Product description does not match the listing"
-        );
+                detailsPage.getDescription(),
+                expectedDescription,
+                "Product description does not match the listing");
 
         Assert.assertEquals(
-            detailsPage.getPrice(),
-            expectedPrice,
-            "Product price does not match the listing"
-        );
+                detailsPage.getPrice(),
+                expectedPrice,
+                "Product price does not match the listing");
 
         // WHEN: I add the product to the cart
         detailsPage.addToCart();
 
         // THEN: The cart badge should show one item
         Assert.assertEquals(
-            detailsPage.getCartBadgeCount(),
-            "1",
-            "Cart badge should display one item"
-        );
+                detailsPage.getCartBadgeCount(),
+                "1",
+                "Cart badge should display one item");
 
         // WHEN: I open the shopping cart
         detailsPage.openCart();
@@ -68,27 +64,23 @@ public class ProductTest extends BaseTest {
 
         // THEN: The cart should contain the correct product
         Assert.assertEquals(
-            cartPage.getItemName(),
-            expectedName,
-            "Incorrect product name in cart"
-        );
+                cartPage.getItemName(),
+                expectedName,
+                "Incorrect product name in cart");
 
         Assert.assertEquals(
-            cartPage.getItemDescription(),
-            expectedDescription,
-            "Incorrect product description in cart"
-        );
+                cartPage.getItemDescription(),
+                expectedDescription,
+                "Incorrect product description in cart");
 
         Assert.assertEquals(
-            cartPage.getItemPrice(),
-            expectedPrice,
-            "Incorrect product price in cart"
-        );
+                cartPage.getItemPrice(),
+                expectedPrice,
+                "Incorrect product price in cart");
 
         Assert.assertEquals(
-            cartPage.getItemQuantity(),
-            "1",
-            "Expected a quantity of one in the cart"
-        );
+                cartPage.getItemQuantity(),
+                "1",
+                "Expected a quantity of one in the cart");
     }
 }
