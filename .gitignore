@@ -1,0 +1,17 @@
+# Maven build files
+target/
+
+# Java compiled files
+*.class
+
+# VS Code settings
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Log files
+*.log
+
+# Environment variables
+.env
