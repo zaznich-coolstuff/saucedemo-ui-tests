@@ -6,6 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.time.Duration;
 
@@ -19,6 +21,7 @@ public class CartPage {
     private By productDescription = By.className("inventory_item_desc");
     private By productPrice = By.className("inventory_item_price");
     private By productQuantity = By.className("cart_quantity");
+    private By checkoutButton = By.id("checkout");
 
     public CartPage(WebDriver driver) {
         this.wait = new WebDriverWait(
@@ -52,5 +55,32 @@ public class CartPage {
     public String getItemQuantity() {
         return getCartItem()
             .findElement(productQuantity).getText();
+    }
+
+    // UI-03: Get the names of all products in the cart
+    public List<String> getCartItemNames() {
+
+        // Wait for the cart items to become visible
+        List<WebElement> items = wait.until(
+            ExpectedConditions.visibilityOfAllElementsLocatedBy(cartItem)
+        );
+
+        List<String> names = new ArrayList<>();
+
+        // Read the name of each product
+        for (WebElement item : items) {
+            names.add(
+                item.findElement(productName).getText()
+            );
+        }
+
+        return names;
+    }
+
+    // UI-03: Proceed from the cart to checkout
+    public void proceedToCheckout() {
+        wait.until(
+            ExpectedConditions.elementToBeClickable(checkoutButton)
+        ).click();
     }
 }
